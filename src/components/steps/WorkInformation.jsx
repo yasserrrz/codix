@@ -1,101 +1,283 @@
-import { TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
-import { RiAttachment2 } from 'react-icons/ri'
+import React, { useEffect, useState } from "react";
+import Input from "../Input";
+import Dropdown from "../Dropdown";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { use } from "react";
 
-export default function WorkInformation() {
+const WorkInformation = ({
+  onUpdate,
+  currentStep,
+  steps,
+  handlePrevious,
+  handleNext,
+}) => {
+  const [formData, setFormData] = useState({
+    department: "",
+    jobTitle: "",
+    contractDuration: "",
+    contractStartDate: "",
+    contractEndDate: "",
+    contractAttachment: null,
+    workLocation: "",
+    workType: "",
+    grossSalary: "",
+    netSalary: "",
+  });
+  const [errors, setErrors] = useState({
+    department: "",
+    jobTitle: "",
+    contractDuration: "",
+    contractStartDate: "",
+    contractEndDate: "",
+    contractAttachment: null,
+    workLocation: "",
+    workType: "",
+    grossSalary: "",
+    netSalary: "",
+  });
+
+  const {work} = useSelector((state) => state.employee.formData)
+  useEffect(() => {
+    setFormData(work)
+  } ,[work])
+
+  const workLocationOptions = [
+    { id: "remote", label: "Remote" },
+    { id: "office", label: "Office" },
+  ];
+  const workTypeOptions = [
+    { id: "full-time", label: "Full-time" },
+    { id: "part-time", label: "Part-time" },
+  ];
+  const onChange = (e) => {
+    const { name, type } = e.target;
+
+    if (type === "file") {
+      const file = e.target.files[0];
+      console.log(file);
+      setFormData((prev) => ({
+        ...prev,
+        [name]: {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        },
+      }));
+    } else {
+      if (
+        name === "grossSalary" || name === "netSalary" 
+      ) {
+        const value = e.target.value.replace(/[^0-9][a-zA-Z]/g, "");
+        e.target.value = value;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        [name]: e.target.value,
+      }));
+     
+    }
+
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+    console.log(formData);
+  };
+  const handleSelectChange = (name, option) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: option.id,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
+  const isValide = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+    if (!formData.department) {
+      newErrors.department = "Department is required";
+      isValid = false;
+    }
+    if (!formData.jobTitle) {
+      newErrors.jobTitle = "Job title is required";
+      isValid = false;
+    }
+    if (!formData.contractDuration) {
+      newErrors.contractDuration = "Contract duration is required";
+      isValid = false;
+    }
+    if (!formData.contractStartDate) {
+      newErrors.contractStartDate = "Contract start date is required";
+      isValid = false;
+    }
+    if (!formData.contractEndDate) {
+      newErrors.contractEndDate = "Contract end date is required";
+      isValid = false;
+    }
+    if (!formData.contractAttachment) {
+      newErrors.contractAttachment = "Contract attachment is required";
+      isValid = false;
+    }
+    if (!formData.workLocation) {
+      newErrors.workLocation = "Work location is required";
+      isValid = false;
+    }
+    if (!formData.workType) {
+      newErrors.workType = "Work type is required";
+      isValid = false;
+    }
+    if (!formData.grossSalary || formData.grossSalary <= 0) {
+      newErrors.grossSalary = "Enter a valid gross salary";
+      isValid = false;
+    }
+    if (!formData.netSalary || formData.netSalary <= 0) {
+      newErrors.netSalary = "Enter a valid net salary";
+      isValid = false;
+    }
+    if(formData.contractStartDate > formData.contractEndDate){
+      newErrors.contractStartDate = "Contract start date must be before contract end date";
+      isValid = false;
+    }
+    setErrors(newErrors);
+    return isValid;
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData);
+    if (!isValide()) return;
+    onUpdate(formData);
+    handleNext();
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Job Information</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <TextField
-          fullWidth
+    <div>
+      <h2 className="text-2xl  my-5  mb-7 font-[700] text-[#003465] ">
+        Work Information
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+        <Input
           label="Department Name"
-          variant="outlined"
-          placeholder="Social Media"
-          size="small"
+          name="department"
+          value={formData.department || ""}
+          onChange={onChange}
+          placeholder="Enter department"
+          error={errors.department || ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Job Title"
-          variant="outlined"
-          placeholder="Manager"
-          size="small"
+          name="jobTitle"
+          value={formData.jobTitle || ""}
+          onChange={onChange}
+          placeholder="Enter job title"
+          error={errors.jobTitle || ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Contract Duration"
-          variant="outlined"
-          placeholder="All"
-          size="small"
+          name="contractDuration"
+          value={formData.contractDuration || ""}
+          onChange={onChange}
+          placeholder="Enter contract duration"
+          error={errors.contractDuration || ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Contract Start Date"
+          name="contractStartDate"
+          value={formData.contractStartDate || ""}
+          onChange={onChange}
+          placeholder="Enter contract start date"
           type="date"
-          variant="outlined"
-          size="small"
-          InputLabelProps={{ shrink: true }}
+          error={errors.contractStartDate || ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Contract End Date"
+          name="contractEndDate"
+          value={formData.contractEndDate || ""}
+          onChange={onChange}
           type="date"
-          variant="outlined"
-          size="small"
-          InputLabelProps={{ shrink: true }}
+          placeholder="Enter contract end date"
+          error={errors.contractEndDate || ""}
         />
-        <div className="flex gap-2">
-          <TextField
-            fullWidth
-            label="Contract Attachment"
-            variant="outlined"
-            placeholder="Attach"
-            size="small"
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          <button className="px-4 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200">
-            <RiAttachment2 className="w-5 h-5" />
-          </button>
-        </div>
-        <FormControl fullWidth size="small">
-          <InputLabel>Work Location</InputLabel>
-          <Select label="Work Location" defaultValue="">
-            <MenuItem value="office">Office</MenuItem>
-            <MenuItem value="remote">Remote</MenuItem>
-            <MenuItem value="hybrid">Hybrid</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl fullWidth size="small">
-          <InputLabel>Work Type</InputLabel>
-          <Select label="Work Type" defaultValue="">
-            <MenuItem value="full-time">Full Time</MenuItem>
-            <MenuItem value="part-time">Part Time</MenuItem>
-            <MenuItem value="contract">Contract</MenuItem>
-          </Select>
-        </FormControl>
-      </div>
+        <Input
+          label="Contract Attachment"
+          name="contractAttachment"
+          type="file"
+          value={formData.contractAttachment || null }
+          onChange={onChange}
+          fileName={formData.contractAttachment?.name}
+          placeholder="Enter contract attachment"
+          error={errors.contractAttachment || ""}
+        />
 
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Salary Information</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <TextField
-          fullWidth
+        <Dropdown
+          label="Work Location"
+          options={workLocationOptions}
+          value={formData.workLocation || ""}
+          name={"workLocation"}
+          onChange={handleSelectChange}
+          error={errors.workLocation || ""}
+        />
+        <Dropdown
+          label="Work Type"
+          options={workTypeOptions}
+          name={"workType"}
+          value={formData.workType || ""}
+          onChange={handleSelectChange}
+          error={errors.workType || ""}
+        />
+      </div>
+      <h2 className="text-2xl  my-7 font-[700] text-[#003465] ">
+        Salary Information
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Input
           label="Gross Salary"
-          variant="outlined"
-          placeholder="10"
-          size="small"
+          name="grossSalary"
+          value={formData.grossSalary || ""}
+          onChange={onChange}
+          placeholder="Enter salary"
+          error={errors.grossSalary || ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Net Salary"
-          variant="outlined"
-          placeholder="10"
-          size="small"
+          name="netSalary"
+          value={formData.netSalary || ""}
+          onChange={onChange}
+          placeholder="Enter net salary"
+          
+          error={errors.netSalary || ""}
         />
+        </div>
+
+      <div className="w-full flex justify-end z-30   mt-6">
+        <div className="flex gap-2 mt-6">
+          {currentStep > 1 && (
+            <button
+              onClick={handlePrevious}
+              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <FaArrowLeft color="#003465" />
+            </button>
+          )}
+          {currentStep < steps?.length && (
+            <button
+              onClick={handleSubmit}
+              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <FaArrowRight color="#003465" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
+export default WorkInformation;

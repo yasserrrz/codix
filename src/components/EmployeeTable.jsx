@@ -1,62 +1,49 @@
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button
-} from '@mui/material'
-import { FaPlus } from 'react-icons/fa'
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+import { FaPlus } from "react-icons/fa";
 
 export default function EmployeeTable() {
-  const employees = useSelector(state => state.employee.employees)
-  const navigate = useNavigate()
+  const employees = useSelector((state) => state.employee.employees);
+  const navigate = useNavigate();
+  console.log(employees);
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">All Employees</h1>
-        <Button
-          variant="contained"
-          startIcon={<FaPlus />}
-          onClick={() => navigate('/employees/new')}
-          className="bg-blue-600"
+        <button
+          onClick={() => navigate("/employees/new")}
+          className="bg-[#003366] hover:bg-[#004080] flex items-center gap-2 text-white font-bold py-2 px-4 rounded-lg"
         >
-          Add Employee
-        </Button>
+          <span>Add Employee </span> <FaPlus />
+        </button>
       </div>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Department</TableCell>
-              <TableCell>Position</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white">
+          <thead className="bg-[#8a8a8a] text-white ">
+            <tr>
+              <th className="w-1/5 py-2 px-4 rounded-l-lg">Name</th>
+              <th className="w-1/5 py-2 px-4">Email</th>
+              <th className="w-1/5 py-2 px-4">Phone</th>
+              <th className="w-1/5 py-2 px-4">Department</th>
+              <th className="w-1/5 py-2 px-4  rounded-r-lg" >Position</th>
+            </tr>
+          </thead>
+          <tbody>
             {employees.map((employee, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  {`${employee.step1.firstName} ${employee.step1.lastName}`}
-                </TableCell>
-                <TableCell>{employee.step1.email}</TableCell>
-                <TableCell>{employee.step1.phoneNumber1}</TableCell>
-                <TableCell>{employee.step2.department}</TableCell>
-                <TableCell>{employee.step2.position}</TableCell>
-              </TableRow>
+              <tr key={index} className="bg-gray-100 border-b">
+                <td className="py-2 px-4">{`${employee.personal.firstName} ${employee.personal.lastName}`}</td>
+                <td className="py-2 px-4">{employee.personal.email}</td>
+                <td className="py-2 px-4">{employee.personal.phoneNumber1}</td>
+                <td className="py-2 px-4">{employee.work.department}</td>
+                <td className="py-2 px-4">{employee.work.position}</td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
     </div>
-  )
+  );
 }
-

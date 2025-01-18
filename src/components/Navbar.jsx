@@ -1,70 +1,95 @@
-import { useState } from 'react';
-import { Badge, Menu, MenuItem } from '@mui/material';
-import { RiSettings4Line, RiNotification3Line, RiArrowDownSLine, RiMenuLine, RiCloseLine } from 'react-icons/ri';
+import React, { useEffect, useRef, useState } from "react";
+import { use } from "react";
+import {
+  RiNotification3Line,
+  RiSettings4Line,
+  RiArrowDownSLine,
+  RiMenu3Line,
+  RiCloseLine,
+} from "react-icons/ri";
+import UserImage from "../assets/790e98129931897251abd3915a931233.jpeg";
 
-export default function Navbar({ isOpen, toggleSidebar }) {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+const Navbar = ({ toggleSidebar }) => {
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const UserMenuRef = useRef(null);
 
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
-  const handleNotificationClick = (event) => setNotificationAnchorEl(event.currentTarget);
-  const handleNotificationClose = () => setNotificationAnchorEl(null);
+  const toggleProfileMenu = () => {
+    setShowProfileMenu(!showProfileMenu);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (UserMenuRef.current && !UserMenuRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
-    <nav className="bg-white border-b border-gray-200 fixed w-full z-30 top-0 left-0 right-0">
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Mobile menu button */}
-          <button
-            onClick={toggleSidebar}
-            className="lg:hidden text-gray-400 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-          >
-            {isOpen ? <RiCloseLine size={24} /> : <RiMenuLine size={24} />}
-          </button>
-          
+    <nav className="bg-[#003366] shadow-sm rounded-br-[16px] rounded-bl-[16px] lg:rounded-bl-[0px] ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <button className="p-1 rounded-full text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+            <button
+              onClick={toggleSidebar}
+              className="p-2 rounded-md text-gray-400 lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+            >
+              <RiMenu3Line className="h-6 w-6" />
+            </button>
+          </div>
+          <div className="flex items-center">
+            <button className="p-2 rounded-full text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
               <RiSettings4Line className="h-6 w-6" />
             </button>
-            <button 
-              onClick={handleNotificationClick}
-              className="ml-4 p-1 rounded-full text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-            >
-              <Badge badgeContent={3} color="error">
-                <RiNotification3Line className="h-6 w-6" />
-              </Badge>
+            <button className="ml-3 p-2 rounded-full text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <RiNotification3Line className="h-6 w-6" />
             </button>
-            <Menu
-              anchorEl={notificationAnchorEl}
-              open={Boolean(notificationAnchorEl)}
-              onClose={handleNotificationClose}
-            >
-              <MenuItem onClick={handleNotificationClose}>Notification 1</MenuItem>
-              <MenuItem onClick={handleNotificationClose}>Notification 2</MenuItem>
-              <MenuItem onClick={handleNotificationClose}>Notification 3</MenuItem>
-            </Menu>
-            <div className="ml-4 flex items-center">
-              <button
-                onClick={handleClick}
-                className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-              >
-                <img className="h-8 w-8 rounded-full" src="/placeholder-avatar.jpg" alt="User avatar" />
-                <RiArrowDownSLine className="ml-1 h-5 w-5 text-gray-400" />
-              </button>
+            <div className="ml-3 relative" ref={UserMenuRef}>
+              <div>
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="flex items-center max-w-xs text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  <img
+                    className="h-8 w-8 rounded-full object-cover"
+                    src={UserImage}
+                    alt="User avatar"
+                  />
+                  <RiArrowDownSLine className="ml-1 h-5 w-5 text-gray-400" />
+                </button>
+              </div>
+              {showProfileMenu && (
+                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Your Profile
+                  </a>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Settings
+                  </a>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Sign out
+                  </a>
+                </div>
+              )}
             </div>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-            >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
-            </Menu>
           </div>
         </div>
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;

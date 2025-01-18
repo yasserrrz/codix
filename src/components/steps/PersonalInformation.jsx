@@ -1,146 +1,379 @@
-import { TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
-import { RiAttachment2 } from 'react-icons/ri'
+import React, { useEffect, useState } from "react";
 
-export default function PersonalInformation() {
+import Dropdown from "../Dropdown";
+import Input from "../Input";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { useSelector } from "react-redux";
+
+const PersonalInformation = ({
+  onUpdate,
+  currentStep,
+  handlePrevious,
+  handleNext,
+  steps,
+}) => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    gender: "",
+    dateOfBirth: "",
+    age: "",
+    nationality: "",
+    nationalityId: "",
+    nationalIdAttachment: null,
+    militaryStatus: "",
+    maritalStatus: "",
+    city: "",
+    address: "",
+    email: "",
+    phoneNumber1: "",
+    phoneNumber2: "",
+    socialInsuranceNumber: "",
+  });
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    gender: "",
+    dateOfBirth: "",
+    age: "",
+    nationality: "",
+    nationalityId: "",
+    nationalIdAttachment: "",
+    militaryStatus: "",
+    maritalStatus: "",
+    city: "",
+    address: "",
+    email: "",
+    phoneNumber1: "",
+    phoneNumber2: "",
+    socialInsuranceNumber: "",
+  });
+  const {personal } = useSelector((state) => state.employee.formData);
+  useEffect(() => {
+    if (personal) {
+      setFormData(personal);
+    }
+  } , [personal]);
+  const genderOptions = [
+    { id: "male", label: "Male" },
+    { id: "female", label: "Female" },
+  ];
+
+  const maritalStatusOptions = [
+    { id: "single", label: "Single" },
+    { id: "married", label: "Married" },
+    { id: "divorced", label: "Divorced" },
+  ];
+  const militaryOptions = [
+    {id:"exepted",label:"Expected"},
+    {id:"active",label:"Active"},
+    {id:"inactive",label:"Inactive"},
+  ];
+
+  const onChange = (e) => {
+    const { name, type } = e.target;
+
+    if (type === "file") {
+      const file = e.target.files[0];
+      console.log(file);
+      setFormData((prev) => ({
+        ...prev,
+        [name]:{
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        } ,
+      }));
+    } else {
+      if (
+        name === "nationalityId" ||
+        name === "socialInsuranceNumber" ||
+        name === "phoneNumber1" ||
+        name === "phoneNumber2"
+      ) {
+        const value = e.target.value.replace(/[^0-9 +]/g, "");
+        e.target.value = value;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        [name]: e.target.value,
+      }));
+      if (errors[name]) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "",
+        }));
+      }
+    }
+
+    console.log(formData);
+  };
+  const handleSelectChange = (name, option) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: option.id,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
+  const isValide = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+    if (!formData.firstName) {
+      newErrors.firstName = "First name is required";
+      isValid = false;
+    }
+    if (!formData.lastName) {
+      newErrors.lastName = "Last name is required";
+      isValid = false;
+    }
+    if (!formData.middleName) {
+      newErrors.middleName = "Middle name is required";
+      isValid = false;
+    }
+    if (!formData.age || formData.age <= 0 || formData.age > 100) {
+      newErrors.age = "Enter a valid age";
+      isValid = false;
+    }
+    if (!formData.dateOfBirth) {
+      newErrors.dateOfBirth = "Date of birth is required";
+      isValid = false;
+    }
+    if (!formData.nationality) {
+      newErrors.nationality = "Nationality is required";
+      isValid = false;
+    }
+    if (!formData.nationalityId) {
+      newErrors.nationalityId = "Nationality ID is required";
+      isValid = false;
+    }
+    if (!formData.nationalIdAttachment) {
+      newErrors.nationalIdAttachment = "National ID attachment is required";
+      isValid = false;
+    }
+    if (!formData.militaryStatus) {
+      newErrors.militaryStatus = "Military status is required";
+      isValid = false;
+    }
+    if (!formData.maritalStatus) {
+      newErrors.maritalStatus = "Marital status is required";
+      isValid = false;
+    }
+    if (!formData.city) {
+      newErrors.city = "City is required";
+      isValid = false;
+    }
+    if (!formData.address) {
+      newErrors.address = "Address is required";
+      isValid = false;
+    }
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    }
+    if (!formData.gender) {
+      newErrors.gender = "Gender is required";
+      isValid = false;
+    }
+    if (!formData.phoneNumber1) {
+      newErrors.phoneNumber1 = "Phone number 1 is required";
+      isValid = false;
+    }
+    if (!formData.socialInsuranceNumber) {
+      newErrors.socialInsuranceNumber = "Social insurance number is required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData);
+    if (!isValide()) return;
+    onUpdate(formData);
+    handleNext();
+  };
+
+
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">General Information</h2>
-      
+    <div>
+      <h2 className="text-2xl  my-5  mb-7 font-[700] text-[#003465] ">
+        General Information
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <TextField
-          fullWidth
+        <Input
           label="First Name"
-          variant="outlined"
-          placeholder="Mohamed"
-          size="small"
+          value={formData.firstName || ""}
+          name="firstName"
+          onChange={onChange}
+          placeholder="Enter first name"
+          error={errors.firstName ? errors.firstName : ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Middle Name"
-          variant="outlined"
-          placeholder="Ali"
-          size="small"
+          name="middleName"
+          value={formData.middleName || ""}
+          onChange={onChange}
+          placeholder="Enter middle name"
+          error={errors.middleName ? errors.middleName : ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Last Name"
-          variant="outlined"
-          placeholder="Ali"
-          size="small"
+          name="lastName"
+          value={formData.lastName || ""}
+          onChange={onChange}
+          placeholder="Enter last name"
+          error={errors.lastName ? errors.lastName : ""}
         />
-        <FormControl fullWidth size="small">
-          <InputLabel>Gender</InputLabel>
-          <Select label="Gender" defaultValue="">
-            <MenuItem value="male">Male</MenuItem>
-            <MenuItem value="female">Female</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          fullWidth
+        <Dropdown
+          label="Gender"
+          name="gender"
+          options={genderOptions}
+          value={formData.gender || ""}
+          onChange={handleSelectChange}
+          error={errors.gender ? errors.gender : ""}
+        />
+        <Input
           label="Age"
-          variant="outlined"
           type="number"
-          placeholder="40"
-          size="small"
+          value={formData.age || ""}
+          onChange={onChange}
+          placeholder="Enter age"
+          name="age"
+          error={errors.age ? errors.age : ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Date of Birth"
-          variant="outlined"
           type="date"
-          InputLabelProps={{ shrink: true }}
-          size="small"
+          name="dateOfBirth"
+          value={formData.dateOfBirth || ""}
+          onChange={onChange}
+          placeholder="Enter date of birth"
+          error={errors.dateOfBirth ? errors.dateOfBirth : ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Nationality"
-          variant="outlined"
-          placeholder="Egyptian"
-          size="small"
+          name="nationality"
+          value={formData.nationality || ""}
+          onChange={onChange}
+          placeholder="Enter nationality"
+          error={errors.nationality ? errors.nationality : ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="National ID"
-          variant="outlined"
-          placeholder="20320231032145"
-          size="small"
+          name="nationalityId"
+          onChange={onChange}
+          value={formData.nationalityId || ""}
+          placeholder="Enter national ID"
+          error={errors.nationalityId ? errors.nationalityId : ""}
         />
-        <div className="flex gap-2">
-          <TextField
-            fullWidth
-            label="National ID Attachment"
-            variant="outlined"
-            placeholder="Attach"
-            size="small"
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          <button className="px-4 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200">
-            <RiAttachment2 className="w-5 h-5" />
-          </button>
-        </div>
-        <FormControl fullWidth size="small">
-          <InputLabel>Military Status</InputLabel>
-          <Select label="Military Status" defaultValue="">
-            <MenuItem value="completed">Completed</MenuItem>
-            <MenuItem value="exempted">Exempted</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl fullWidth size="small">
-          <InputLabel>Marital Status</InputLabel>
-          <Select label="Marital Status" defaultValue="">
-            <MenuItem value="single">Single</MenuItem>
-            <MenuItem value="married">Married</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          fullWidth
+        <Input
+          label="National ID Attachment"
+          name="nationalIdAttachment"
+          type="file"
+          value={formData.nationalIdAttachment || null}
+          onChange={onChange}
+          fileName={formData.nationalIdAttachment?.name}
+          error={errors.nationalIdAttachment ? errors.nationalIdAttachment : ""}
+        />
+        <Dropdown
+          label="Marital Status"
+          options={maritalStatusOptions}
+          name="maritalStatus"
+          value={formData.maritalStatus || ""}
+          onChange={handleSelectChange}
+          error={errors.maritalStatus ? errors.maritalStatus : ""}
+        />
+        <Dropdown
+          label="Military Status"
+          options={militaryOptions}
+          name="militaryStatus"
+          value={formData.militaryStatus || ""}
+          onChange={handleSelectChange}
+          error={errors.militaryStatus ? errors.militaryStatus : ""}
+        />
+        <Input
           label="City"
-          variant="outlined"
-          placeholder="Cairo"
-          size="small"
+          name="city"
+          value={formData.city || ""}
+          onChange={onChange}
+          placeholder="Enter city"
+          error={errors.city ? errors.city : ""}
         />
-        <div className="col-span-full">
-          <TextField
-            fullWidth
-            label="Address"
-            variant="outlined"
-            placeholder="Cairo, Egypt"
-            size="small"
-          />
-        </div>
-        <TextField
-          fullWidth
+        <Input
+          label="Address"
+          name="address"
+          value={formData.address || ""}
+          onChange={onChange}
+          placeholder="Enter address"
+          error={errors.address ? errors.address : ""}
+        />
+        <Input
           label="Email"
-          variant="outlined"
           type="email"
-          placeholder="example@email.com"
-          size="small"
+          name="email"
+          value={formData.email || ""}
+          onChange={onChange}
+          placeholder="Enter email"
+          error={errors.email ? errors.email : ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Phone Number 1"
-          variant="outlined"
-          placeholder="(+20) 1232365632"
-          size="small"
+          name="phoneNumber1"
+          value={formData.phoneNumber1 || ""}
+          onChange={onChange}
+          placeholder="Enter phone number 1"
+          error={errors.phoneNumber1 ? errors.phoneNumber1 : ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Phone Number 2"
-          variant="outlined"
-          placeholder="(+20) 1232365632"
-          size="small"
+          name="phoneNumber2"
+          value={formData.phoneNumber2 || ""}
+          onChange={onChange}
+          placeholder="Enter phone number 2"
+          error={errors.phoneNumber2 ? errors.phoneNumber2 : ""}
         />
-        <TextField
-          fullWidth
+        <Input
           label="Social Insurance Number"
-          variant="outlined"
-          placeholder="234 657 984"
-          size="small"
+          name="socialInsuranceNumber"
+          value={formData.socialInsuranceNumber || ""}
+          onChange={onChange}
+          placeholder="Enter social insurance number"
+          error={
+            errors.socialInsuranceNumber ? errors.socialInsuranceNumber : ""
+          }
         />
       </div>
+      <div className="w-full flex justify-end z-30   mt-6">
+        <div className="flex gap-2 mt-6">
+          {currentStep > 1 && (
+            <button
+              onClick={handlePrevious}
+              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <FaArrowLeft color="#003465" />
+            </button>
+          )}
+          {currentStep < steps?.length && (
+            <button
+              onClick={handleSubmit}
+              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <FaArrowRight color="#003465" />
+            </button>
+          )}
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
+export default PersonalInformation;
