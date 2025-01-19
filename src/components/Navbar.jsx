@@ -13,10 +13,6 @@ const Navbar = ({ toggleSidebar }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const UserMenuRef = useRef(null);
 
-  const toggleProfileMenu = () => {
-    setShowProfileMenu(!showProfileMenu);
-  };
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (UserMenuRef.current && !UserMenuRef.current.contains(event.target)) {
@@ -38,15 +34,15 @@ const Navbar = ({ toggleSidebar }) => {
               onClick={toggleSidebar}
               className="p-2 rounded-md text-gray-400 lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
             >
-              <RiMenu3Line className="h-6 w-6" />
+              <RiMenu3Line color="#fff" className="h-6 w-6" />
             </button>
           </div>
           <div className="flex items-center">
-            <button className="p-2 rounded-full text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              <RiSettings4Line className="h-6 w-6" />
+            <button className="p-2 rounded-full text-[#fff]  hover:bg-gray-100 hover:text-[#5b5b5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <RiSettings4Line  className="h-6 w-6" />
             </button>
-            <button className="ml-3 p-2 rounded-full text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              <RiNotification3Line className="h-6 w-6" />
+            <button className="ml-3 p-2 rounded-full text-[#fff]  hover:bg-gray-100 hover:text-[#5b5b5b]  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <RiNotification3Line  className="h-6 w-6" />
             </button>
             <div className="ml-3 relative" ref={UserMenuRef}>
               <div>

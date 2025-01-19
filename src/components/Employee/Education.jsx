@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Input from "../Input";
-import Dropdown from "../Dropdown";
+import Input from "../Inputs/Input";
+import Dropdown from "../Inputs/Dropdown";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { CiCircleRemove } from "react-icons/ci";
 import { IoAddOutline } from "react-icons/io5";
@@ -54,8 +54,19 @@ const Education = ({
   });
   const {education} = useSelector((state) => state.employee.formData)
   useEffect(() => {
-    if (education.name &&  education.certificationsAndTraining.length > 0) {
-      setFormData(education);
+    if (education.name !== "") {
+       console.log(education);
+      setFormData({
+        degree: education.degree,
+        fieldOfStudy: education.fieldOfStudy,
+        institutionName: education.institutionName,
+        locationOfInstitution: education.locationOfInstitution,
+        graduationDate: education.graduationDate,
+        gpa: education.gpa,
+        startDate: education.startDate,
+        endDate: education.endDate,
+        certificationsAndTraining: education.certificationsAndTraining,
+      })
     }
   } , [education])
   const educationLevelOptions = [
@@ -470,7 +481,7 @@ const Education = ({
           {currentStep < steps?.length && (
             <button
               onClick={handleSubmit}
-              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              className="p-2 border  border-gray-300 rounded-md hover:bg-gray-50"
             >
               <FaArrowRight color="#003465" />
             </button>

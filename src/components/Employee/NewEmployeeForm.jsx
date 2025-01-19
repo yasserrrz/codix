@@ -1,25 +1,23 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,  useNavigate } from "react-router-dom";
 import {
   RiArrowRightSLine,
-  RiArrowLeftLine,
-  RiArrowRightLine,
-  RiCheckLine,
   RiCloseLine,
 } from "react-icons/ri";
 
-import PersonalInformation from "./steps/PersonalInformation";
-import WorkInformation from "./steps/WorkInformation";
-import Education from "./steps/Education";
-import Payroll from "./steps/Payroll";
-import { FaArrowLeft, FaArrowRight, FaRegCheckCircle } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { addEmployee, resetForm, setFormData } from "../store/employeeSlice";
-import Modal from "./Modal/Modal";
+import PersonalInformation from "./PersonalInformation";
+import WorkInformation from "./WorkInformation";
+import Education from "./Education";
+import Payroll from "./Payroll";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { addEmployee, resetForm, setFormData } from "../../store/employeeSlice";
+import Modal from "../Modal/Modal";
 import { BiCheck } from "react-icons/bi";
 
 export default function NewEmployeeForm() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [showWarning, setShowWarning] = useState(false);
   const [showIncomplete, setShowIncomplete] = useState(false);
@@ -125,18 +123,28 @@ export default function NewEmployeeForm() {
       setCurrentStep(currentStep + 1);
     }
   };
-
   const handlePrevious = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
-
   const handleDiscard = () => {
-    setShowWarning(true);
     dispatch(resetForm());
+    navigate("/");
+    setShowWarning(false);
   };
-
+  
+  const handleSuccess = () => {
+    dispatch(resetForm());
+    navigate("/");
+    setShowSuccess(false);
+  };
+  const handleCreateNew = () => {
+    dispatch(resetForm());
+    navigate("/new");
+    setCurrentStep(1);
+    setShowSuccess(false);
+  }
   const CurrentStepComponent = steps[currentStep - 1].component;
 
   return (
@@ -145,7 +153,7 @@ export default function NewEmployeeForm() {
       <div className="flex flex-col py-4 border-b border-gray-200 w-full md:flex-row items-start md:items-center justify-between mb-6">
         <div className="flex items-center text-sm mb-4 md:mb-0">
           <Link
-            to="/employees"
+            to="/"
             className="text-gray-500 font-bold text-[16px] md:text-[18px] lg:text-[22px]"
           >
             All Employees
@@ -155,9 +163,11 @@ export default function NewEmployeeForm() {
             New
           </span>
         </div>
-        <div className="flex gap-3">
+        <div className="flex w-full md:w-auto gap-3 justify-end">
           <button
-            onClick={handleDiscard}
+            onClick={()=>{
+              setShowWarning(true)
+            }}
             className="px-8 py-2 text-sm border  border-[#003366]  rounded-md hover:bg-[#003366d8] hover:border-[#003366d8] hover:text-white transition"
           >
             Discard
@@ -191,7 +201,7 @@ export default function NewEmployeeForm() {
                   step.number
                 )}
               </div>
-              <p className="text-sm text-nowrap font-medium mt-2 text-[#637D92]">
+              <p className="text-sm text-nowrap font-medium mt-2 text-[#637D92] hidden md:block">
                 {step.title}
               </p>
             </div>
@@ -279,13 +289,13 @@ export default function NewEmployeeForm() {
         </p>
         <div className="pt-3 flex justify-end gap-3">
           <button
-            onClick={() => setShowWarning(false)}
+            onClick={() => handleDiscard()}
             className="px-8 py-2 text-sm border  border-[#003366]  rounded-lg hover:bg-[#003366d8] hover:text-white transition"
           >
             Discard
           </button>
           <button
-            onClick={() => setShowWarning(false)}
+             onClick={() => handleDiscard()}
             className="px-8 py-2 text-sm font-semibold text-white bg-[#003366] rounded-lg hover:bg-blue-900"
           >
             Save and Exit
@@ -310,7 +320,7 @@ export default function NewEmployeeForm() {
         </p>
         <div className="pt-3 flex justify-end  gap-3">
           <button
-            onClick={() => setShowIncomplete(false)}
+            onClick={() => handleDiscard()}
             className="px-8 py-2 text-sm border  border-[#003366]  rounded-lg hover:bg-[#003366d8] hover:text-white transition"
           >
             Discard
@@ -341,13 +351,13 @@ export default function NewEmployeeForm() {
         </p>
         <div className="pt-3 flex justify-end  gap-3">
           <button
-            onClick={() => setShowSuccess(false)}
+            onClick={handleSuccess}
             className="px-4 py-2 text-sm border  border-[#003366]  rounded-lg hover:bg-[#003366d8] hover:text-white transition"
           >
             View Profile
           </button>
           <button
-            onClick={() => setShowSuccess(false)}
+            onClick={handleCreateNew}
             className="px-4 py-2 text-sm font-semibold text-white bg-[#003366] rounded-lg hover:bg-blue-900"
           >
             Create Another Employee

@@ -13,7 +13,7 @@ export default function EmployeeTable() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">All Employees</h1>
         <button
-          onClick={() => navigate("/employees/new")}
+          onClick={() => navigate("/new")}
           className="bg-[#003366] hover:bg-[#004080] flex items-center gap-2 text-white font-bold py-2 px-4 rounded-lg"
         >
           <span>Add Employee </span> <FaPlus />
@@ -28,7 +28,7 @@ export default function EmployeeTable() {
               <th className="w-1/5 py-2 px-4">Email</th>
               <th className="w-1/5 py-2 px-4">Phone</th>
               <th className="w-1/5 py-2 px-4">Department</th>
-              <th className="w-1/5 py-2 px-4  rounded-r-lg" >Position</th>
+              <th className="w-1/5 py-2 px-4  rounded-r-lg" >JobTitle</th>
             </tr>
           </thead>
           <tbody>
@@ -38,7 +38,7 @@ export default function EmployeeTable() {
                 <td className="py-2 px-4">{employee.personal.email}</td>
                 <td className="py-2 px-4">{employee.personal.phoneNumber1}</td>
                 <td className="py-2 px-4">{employee.work.department}</td>
-                <td className="py-2 px-4">{employee.work.position}</td>
+                <td className="py-2 px-4">{employee.work.jobTitle}</td>
               </tr>
             ))}
           </tbody>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import Dropdown from "../Dropdown";
-import Input from "../Input";
+import Dropdown from "../Inputs/Dropdown";
+import Input from "../Inputs/Input";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
