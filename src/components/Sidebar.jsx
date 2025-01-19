@@ -15,7 +15,7 @@ import {
 import LogoImage from "../assets/Frame 1261158013.png";
 
 const menuItems = [
-  { icon: RiDashboardLine, text: "Dashboard", path: "/" },
+  { icon: RiDashboardLine, text: "Dashboard", path: "/dashboard" },
   { icon: RiTeamLine, text: "All Employees", path: "/" },
   { icon: RiBuilding4Line, text: "All Departments", path: "/departments" },
   { icon: RiTimeLine, text: "Attendance", path: "/attendance" },
